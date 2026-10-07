@@ -1,0 +1,12 @@
+{
+  "command": "asfi301",
+  "feature_args": {
+    "prefix": "TST01",
+    "department_vendor": "V001",
+    "product": "ITEM-001",
+    "quantity": 42,
+    "remark": "第一行\n第二行",
+    "expected_manufacturing_department": "D001",
+    "confirm_write": true
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "erp-sim asfi301 response v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "ok", "command", "queried_at", "query", "session", "data", "error"],
+  "properties": {
+    "schema_version": {"const": "2"},
+    "ok": {"type": "boolean"},
+    "command": {"const": "asfi301"},
+    "queried_at": {"type": "string", "format": "date-time"},
+    "query": {"oneOf": [
+      {"type": "null"},
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["prefix", "department_vendor", "product", "quantity", "remark", "operation", "automatic_retry"],
+        "properties": {
+          "prefix": {"type": "string", "pattern": "^[A-Z0-9]{5}$"},
+          "department_vendor": {"type": "string"},
+          "product": {"type": "string"},
+          "quantity": {"type": "integer", "minimum": 1},
+          "remark": {"type": "string", "minLength": 1, "maxLength": 255, "pattern": "^[^\\u0000-\\u0009\\u000B-\\u001F\\u007F]*$(?![\\s\\S])"},
+          "expected_manufacturing_department": {"type": "string"},
+          "operation": {"const": "create_one"},
+          "automatic_retry": {"const": false}
+        }
+      }
+    ]},
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["logout_verified"],
+      "properties": {"logout_verified": {"type": "boolean"}}
+    },
+    "data": {"oneOf": [
+      {"type": "null"},
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "work_order_number", "fields_verified", "product_name", "detail", "warnings", "persistence_readback"],
+        "properties": {
+          "status": {"enum": ["uncertain", "server_confirmed"]},
+          "work_order_number": {"oneOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Z0-9]{5}-[0-9]{9}$"}]},
+          "fields_verified": {"oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["department_vendor", "department_vendor_name", "manufacturing_department", "manufacturing_department_name", "product", "quantity", "remark"],
+              "properties": {
+                "department_vendor": {"type": "string"},
+                "department_vendor_name": {"type": "string", "minLength": 1},
+                "manufacturing_department": {"type": "string"},
+                "manufacturing_department_name": {"type": "string", "minLength": 1},
+                "product": {"type": "string"},
+                "quantity": {"type": "string", "pattern": "^[0-9]+(?:\\.[0-9]+)?$"},
+                "remark": {"type": "string", "pattern": "^[^\\u0000-\\u0009\\u000B-\\u001F\\u007F]*$(?![\\s\\S])"}
+              }
+            }
+          ]},
+          "product_name": {"oneOf": [{"type": "null"}, {"type": "string"}]},
+          "detail": {"oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["expected_row_count", "visible_row_count", "column_count", "complete"],
+              "properties": {
+                "expected_row_count": {"type": "integer", "minimum": 0},
+                "visible_row_count": {"type": "integer", "minimum": 0},
+                "column_count": {"type": "integer", "minimum": 1},
+                "complete": {"type": "boolean"}
+              }
+            }
+          ]},
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["code", "message"],
+              "properties": {"code": {"type": "string"}, "message": {"type": "string"}}
+            }
+          },
+          "persistence_readback": {"const": "not_performed"}
+        }
+      }
+    ]},
+    "error": {"oneOf": [
+      {"type": "null"},
+      {"type": "object", "additionalProperties": false, "required": ["code", "message"], "properties": {"code": {"type": "string"}, "message": {"type": "string"}}}
+    ]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"ok": {"const": true}}},
+      "then": {
+        "properties": {
+          "query": {"type": "object"},
+          "data": {"type": "object", "properties": {"status": {"const": "server_confirmed"}, "work_order_number": {"type": "string"}, "fields_verified": {"type": "object"}, "detail": {"type": "object"}}},
+          "session": {"properties": {"logout_verified": {"const": true}}},
+          "error": {"type": "null"}
+        }
+      },
+      "else": {"properties": {"error": {"type": "object"}}}
+    }
+  ]
+}

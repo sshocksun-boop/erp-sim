@@ -1,0 +1,3 @@
+interface:
+  display_name: "ERP Queries and Work Orders"
+  short_description: "Query ERP orders, material quantities or BOMs; create one confirmed work order"

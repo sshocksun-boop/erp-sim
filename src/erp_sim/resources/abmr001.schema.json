@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "erp-sim abmr001 response v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "ok", "command", "queried_at", "query", "session", "data", "error"],
+  "properties": {
+    "schema_version": {"const": "2"},
+    "ok": {"type": "boolean"},
+    "command": {"const": "abmr001"},
+    "queried_at": {"type": "string", "format": "date-time"},
+    "query": {"oneOf": [
+      {"type": "null"},
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["item", "sort", "output_format"],
+        "properties": {
+          "item": {"type": "string", "pattern": "^[A-Za-z0-9_.-]{1,80}$"},
+          "sort": {"const": "bom_sequence"},
+          "output_format": {"const": "text"}
+        }
+      }
+    ]},
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["logout_verified"],
+      "properties": {"logout_verified": {"type": "boolean"}}
+    },
+    "data": {"oneOf": [
+      {"type": "null"},
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["item", "description", "effective_date", "report_created_at", "version", "sort", "component_count", "components", "complete"],
+        "properties": {
+          "item": {"type": "string"},
+          "description": {"type": "string"},
+          "effective_date": {"type": "string"},
+          "report_created_at": {"type": "string"},
+          "version": {"type": "string"},
+          "sort": {"const": "bom_sequence"},
+          "component_count": {"type": "integer", "minimum": 0},
+          "components": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["level", "parent_item", "sequence", "component_item", "component_type", "unit", "source", "description", "marker", "quantity_numerator", "quantity", "drawing", "conversion_unit", "conversion", "notes"],
+              "properties": {
+                "level": {"type": "integer", "minimum": 1},
+                "parent_item": {"type": "string"},
+                "sequence": {"type": "string", "pattern": "^[0-9]{4}$"},
+                "component_item": {"type": "string"},
+                "component_type": {"type": "string"},
+                "unit": {"type": "string"},
+                "source": {"type": "string"},
+                "description": {"type": "string"},
+                "marker": {"type": "string"},
+                "quantity_numerator": {"oneOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9]+(?:\\.[0-9]+)?$"}]},
+                "quantity": {"type": "string", "pattern": "^[0-9]+(?:\\.[0-9]+)?$"},
+                "drawing": {"type": "string"},
+                "conversion_unit": {"type": "string"},
+                "conversion": {"type": "string", "pattern": "^[0-9]+(?:\\.[0-9]+)?$"},
+                "notes": {"type": "array", "items": {"type": "string"}}
+              }
+            }
+          },
+          "complete": {"type": "boolean"}
+        }
+      }
+    ]},
+    "error": {"oneOf": [
+      {"type": "null"},
+      {"type": "object", "additionalProperties": false, "required": ["code", "message"], "properties": {"code": {"type": "string"}, "message": {"type": "string"}}}
+    ]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"ok": {"const": true}}},
+      "then": {
+        "properties": {
+          "query": {"type": "object"},
+          "data": {"type": "object", "properties": {"complete": {"const": true}}},
+          "session": {"properties": {"logout_verified": {"const": true}}},
+          "error": {"type": "null"}
+        }
+      },
+      "else": {"properties": {"error": {"type": "object"}}}
+    }
+  ]
+}

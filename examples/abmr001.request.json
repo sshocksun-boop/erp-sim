@@ -1,0 +1,7 @@
+{
+  "command": "abmr001",
+  "feature_args": {
+    "item": "ROOT-001",
+    "report_output": "outputs/bom.txt"
+  }
+}

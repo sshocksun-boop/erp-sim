@@ -1,0 +1,7 @@
+{
+  "command": "schema",
+  "feature_args": {
+    "kind": "response",
+    "feature": "aimq131"
+  }
+}

@@ -1,0 +1,10 @@
+[connection]
+# Both are optional. Uncomment to override the tested server and route detection.
+# host = "192.168.0.160"
+# callback_host = "192.0.2.10"
+username = "your-account"
+telnet_port = 23
+listen_port = 6401
+timeout = 150
+cleanup_timeout = 20
+# Supply the password through --password or ERP_SIM_PASSWORD; never store it here.

@@ -1,0 +1,8 @@
+{
+  "command": "cxmr4103",
+  "feature_args": {
+    "pattern": "TEST-*",
+    "date_from": "2026-09-01",
+    "date_to": "2026-09-21"
+  }
+}

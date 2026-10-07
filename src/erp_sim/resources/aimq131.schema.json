@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "erp-sim aimq131 response v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "ok", "command", "queried_at", "query", "session", "data", "error"],
+  "properties": {
+    "schema_version": {"const": "2"},
+    "ok": {"type": "boolean"},
+    "command": {"const": "aimq131"},
+    "queried_at": {"type": "string", "format": "date-time"},
+    "query": {"oneOf": [
+      {"type": "null"},
+      {"type": "object", "additionalProperties": false, "required": ["item"],
+       "properties": {"item": {"type": "string", "pattern": "^[A-Za-z0-9_.-]{1,80}$"}}}
+    ]},
+    "session": {"type": "object", "additionalProperties": false,
+                "required": ["logout_verified"],
+                "properties": {"logout_verified": {"type": "boolean"}}},
+    "data": {"oneOf": [
+      {"type": "null"},
+      {"type": "object", "additionalProperties": false,
+       "required": ["item", "description", "specification", "columns", "rows", "row_count",
+                    "expected_row_count", "order_count", "ordered_quantity_total",
+                    "open_quantity_total", "complete"],
+       "properties": {
+         "item": {"type": "string"},
+         "description": {"type": "string"},
+         "specification": {"type": "string"},
+         "columns": {"type": "array", "items": {"type": "object", "additionalProperties": false,
+                    "required": ["id", "label"],
+                    "properties": {"id": {"type": "string"}, "label": {"type": "string"}}}},
+         "rows": {"type": "array", "items": {"type": "object",
+                  "additionalProperties": {"type": "string"}}},
+         "row_count": {"type": "integer", "minimum": 0},
+         "expected_row_count": {"type": "integer", "minimum": 0},
+         "order_count": {"type": "integer", "minimum": 0},
+         "ordered_quantity_total": {"type": "string", "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"},
+         "open_quantity_total": {"type": "string", "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"},
+         "complete": {"type": "boolean"}
+       }}
+    ]},
+    "error": {"oneOf": [
+      {"type": "null"},
+      {"type": "object", "additionalProperties": false, "required": ["code", "message"],
+       "properties": {"code": {"type": "string"}, "message": {"type": "string"}}}
+    ]}
+  },
+  "allOf": [
+    {"if": {"properties": {"ok": {"const": true}}},
+     "then": {"properties": {"query": {"type": "object"},
+                            "data": {"type": "object", "properties": {"complete": {"const": true}}},
+                            "session": {"properties": {"logout_verified": {"const": true}}},
+                            "error": {"type": "null"}}},
+     "else": {"properties": {"error": {"type": "object"}}}}
+  ]
+}

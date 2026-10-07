@@ -1,0 +1,20 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Local configuration, credentials, business data and protocol diagnostics
+*.local.toml
+.env
+.env.*
+!.env.example
+runs/
+outputs/
+.uv-cache/
+.coverage
